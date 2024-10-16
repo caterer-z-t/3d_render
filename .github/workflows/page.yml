@@ -1,0 +1,49 @@
+name: Deploy to GitHub Pages
+
+# Trigger the workflow on push to the 'master' branch
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository content
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # If you need to build your static site (optional step, remove if not needed)
+    # Uncomment and customize based on the framework or build system you use
+    # - name: Set up Node.js
+    #   uses: actions/setup-node@v3
+    #   with:
+    #     node-version: '16'
+    
+    # - name: Install dependencies
+    #   run: npm install
+    
+    # - name: Build the static site
+    #   run: npm run build
+    
+    # Upload the static files to GitHub as an artifact
+    - name: Upload to GitHub Pages artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: ./  # Use your build output directory here if you have a build step (e.g., ./dist)
+
+  deploy:
+    # The deploy job runs only when the build job succeeds
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write  # Grant write permission to GitHub Pages
+      id-token: write  # Required for authentication
+
+    steps:
+    # Deploy the artifact to GitHub Pages
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v1
